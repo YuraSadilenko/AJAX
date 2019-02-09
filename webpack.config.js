@@ -1,11 +1,14 @@
-const path = require('path');
+const path = require('path'); //npm install -D webpack webpack-cli
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
 	mode: 'production', // 'development' || 'production' 
-	entry: './src/index.js',
+	entry:  {
+		script1: './src/index.js',
+	},
 	output: {
-		filename: 'main.js',
-		path: path.resolve(__dirname, 'dist')
+		path: path.resolve(__dirname, 'dist'),
+		filename: '[name].js'
 	},
 	module: {
 		rules: [
@@ -19,5 +22,5 @@ module.exports = {
 			}
 		]
 	},
-	watch: true
+	watch: true,
 };
