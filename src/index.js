@@ -1,5 +1,6 @@
 firstTask();
 getCardData();
+getCostumers();
 
 //first task
 function firstTask() {
@@ -56,7 +57,7 @@ function createCards(object) {
 		div.style.boxShadow = "5px 5px 10px rgba(0,0,0,.2)";
 		div.style.borderRadius = '10px';
 		div.style.backgroundColor = '#f9f1a8';
-		div.style.width = '20%';
+		div.style.width = '200px';
 		div.style.padding = '20px';
 		div.style.marginBottom = '20px';
 		block.appendChild(div);
@@ -157,7 +158,7 @@ function calculateMiddleAge(object, sex) {
 };
 
 //third task
-function getCoctumers() {
+function getCostumers() {
 	let xhr = new XMLHttpRequest();
 
 	xhr.open('GET', 'https://tanuhaua.github.io/datas-file-json/visitors.json', true);
@@ -174,21 +175,38 @@ function getCoctumers() {
       } catch (e) {
         alert( "Некорректный ответ " + e.message );
       }
-      console.log(costumers);
-    }
+			createTable(costumers);
+			console.log(costumers);
+
+		}
 	}
 }
-getCoctumers();
 
 function createTable(object) {
-	let list = document.createElement('ul');
-	document.body.appendChild(list);
+	let date = document.createElement('ul');
+	let description = document.createElement('ul');
+	let email = document.createElement('ul');
+	let id = document.createElement('ul');
+	let name = document.createElement('ul');
+	description.style.display = 'inline';
+	description.style.width = '15%';
+
+	// document.body.appendChild(date);
+	// document.body.appendChild(description);
+	// document.body.appendChild(email);
+	// document.body.appendChild(id);
+	// document.body.appendChild(name);
+
 
 	for (var i = 0 ; i < object.length; i++) {
 		let li = document.createElement('li');
 		li.style.border = '1px solid black';
 		li.style.padding = '4px';
-		list.appendChild(li);
+		date.appendChild(li);
+		description.appendChild(li);
+		email.appendChild(li);
+		id.appendChild(li);
+		name.appendChild(li);
+
 	}
 }
-createTable();
