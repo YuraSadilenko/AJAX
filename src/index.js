@@ -1,6 +1,6 @@
 firstTask();
 getCardData();
-getCostumers();
+costumersData();
 
 //first task
 function firstTask() {
@@ -158,55 +158,131 @@ function calculateMiddleAge(object, sex) {
 };
 
 //third task
-function getCostumers() {
-	let xhr = new XMLHttpRequest();
+// function getCostumers() {
+// 	let xhr = new XMLHttpRequest();
 
-	xhr.open('GET', 'https://tanuhaua.github.io/datas-file-json/visitors.json', true);
-	xhr.send();
+// 	xhr.open('GET', 'https://tanuhaua.github.io/datas-file-json/visitors.json', true);
+// 	xhr.send();
 
-	xhr.onreadystatechange = function() { // (3)
-  	if (xhr.readyState != 4) return;
+// 	xhr.onreadystatechange = function() { // (3)
+//   	if (xhr.readyState != 4) return;
 
-		if (xhr.status !== 200) {
-			console.log(xhr.status + ':' + xhr.statusText);
-		} else {
-      try {
-        var costumers = JSON.parse(xhr.responseText);
-      } catch (e) {
-        alert( "Некорректный ответ " + e.message );
+// 		if (xhr.status !== 200) {
+// 			console.log(xhr.status + ':' + xhr.statusText);
+// 		} else {
+//       try {
+//         var costumers = JSON.parse(xhr.responseText);
+//       } catch (e) {
+//         alert( "Некорректный ответ " + e.message );
+//       }
+// 			createTable(costumers);
+// 			console.log(costumers);
+
+// 		}
+// 	}
+// }
+
+// function createTable(object) {
+// 	let date = document.createElement('ul');
+// 	let description = document.createElement('ul');
+// 	let email = document.createElement('ul');
+// 	let id = document.createElement('ul');
+// 	let name = document.createElement('ul');
+// 	description.style.display = 'inline';
+// 	description.style.width = '15%';
+
+// 	document.body.appendChild(date);
+// 	document.body.appendChild(description);
+// 	document.body.appendChild(email);
+// 	document.body.appendChild(id);
+// 	document.body.appendChild(name);
+
+
+// 	for (var i = 0 ; i < object.length; i++) {
+// 		let li = document.createElement('li');
+// 		li.style.border = '1px solid black';
+// 		li.style.padding = '4px';
+// 		date.appendChild(li);
+// 		description.appendChild(li);
+// 		email.appendChild(li);
+// 		id.appendChild(li);
+// 		name.appendChild(li);
+// 	}
+// }
+
+function costumersData() {
+  const table = document.querySelector('.js-table');
+  const tbody = table.querySelector('tbody');
+  const keys = ['id', 'createdAt', 'name', 'email', 'description'];
+
+  const dataSort = (dataArray, key, flag) => {
+    dataArray.sort(function(a, b) {
+      if (a[key].toLowerCase() > b[key].toLowerCase() === flag) {
+        return 1;
+      } else {
+        return -1;
       }
-			createTable(costumers);
-			console.log(costumers);
+    });
+  };
 
-		}
-	}
-}
+  const dateParse = (value) => {
+    const match = /(\d{4})-(\d{2})-(\d{2})/.exec(value);
+    return `${match[1]}.${match[2]}.${match[3]}`;
+  };
 
-function createTable(object) {
-	let date = document.createElement('ul');
-	let description = document.createElement('ul');
-	let email = document.createElement('ul');
-	let id = document.createElement('ul');
-	let name = document.createElement('ul');
-	description.style.display = 'inline';
-	description.style.width = '15%';
+  const newCellInput = (visObj, row, key, keyToHighlight) => {
+    const newCell = document.createElement('td');
+    newCell.className = 'table__cell';
+    if (key === keys[0] || key === keys[1]) {
+      newCell.classList.add('table__cell--center');
+    }
+    if (key === keyToHighlight) {
+      newCell.classList.add('table__cell--highlighted');
+    }
+    if (key !== keys[1]) {
+      newCell.innerHTML = visObj[key];
+    } else {
+      newCell.innerHTML = dateParse(visObj[key]);
+    }
+    row.appendChild(newCell);
+  };
 
-	// document.body.appendChild(date);
-	// document.body.appendChild(description);
-	// document.body.appendChild(email);
-	// document.body.appendChild(id);
-	// document.body.appendChild(name);
+  const tableBuilder = (dataArray, sortedKey) => {
+    dataArray.forEach(function(visitorData) {
+      const newRow = document.createElement('tr');
 
+      keys.forEach(function(item) {
+        newCellInput(visitorData, newRow, item, sortedKey);
+      });
 
-	for (var i = 0 ; i < object.length; i++) {
-		let li = document.createElement('li');
-		li.style.border = '1px solid black';
-		li.style.padding = '4px';
-		date.appendChild(li);
-		description.appendChild(li);
-		email.appendChild(li);
-		id.appendChild(li);
-		name.appendChild(li);
+      tbody.appendChild(newRow);
+    });
+  };
 
-	}
+  const xhr = new XMLHttpRequest();
+
+  xhr.open('GET', 'https://tanuhaua.github.io/datas-file-json/visitors.json', true);
+  xhr.send();
+  xhr.onload = function() {
+    const visitorsFile = JSON.parse(xhr.responseText);
+
+    dataSort(visitorsFile, keys[0], true);
+    table.querySelector(`[data-key="${keys[0]}"]`).dataset.flag = 'false';
+    table.querySelector(`[data-key="${keys[0]}"]`).classList.add('table__head--highlighted');
+
+    tableBuilder(visitorsFile, keys[0]);
+
+    table.onclick = function(e) {
+      if (e.target.tagName !== 'TH') {
+        return;
+      }
+
+      table.querySelector('.table__head--highlighted').classList.remove('table__head--highlighted');
+      e.target.classList.add('table__head--highlighted');
+      tbody.innerHTML = '';
+      dataSort(visitorsFile, e.target.dataset.key, JSON.parse(e.target.dataset.flag));
+      e.target.dataset.flag = !JSON.parse(e.target.dataset.flag);
+      tableBuilder(visitorsFile, e.target.dataset.key);
+    };
+  };
 }
